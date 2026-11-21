@@ -1,0 +1,409 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------------------------------------------------------------
+   AK Physio design tokens
+
+   Light (default) is the clinic: warm paper, deep teal, a mint glow.
+   Dark is the gym floor: charcoal with an energetic lime.
+   Components only ever use the semantic names below.
+   --------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --surface-2: #ebe8e0;
+  --fg: #0d2624;
+  --accent: #0b7a68;
+  --accent-2: #2fb89c;
+  --accent-ink: #ffffff;
+  --energy: #c6f04c;
+  --energy-ink: #0d2624;
+
+  --shadow-card-v: 0 1px 2px rgb(13 38 36 / 0.04), 0 14px 34px -16px rgb(13 38 36 / 0.18);
+  --shadow-lift-v: 0 2px 4px rgb(13 38 36 / 0.05), 0 30px 60px -24px rgb(11 122 104 / 0.32);
+
+  /* Dark "islands" inside the light page (gym band, footer) */
+  --island-bg: #0b1a18;
+  --island-surface-solid: #132a27;
+  --island-accent: #c6f04c;
+  --island-accent-2: #5fe3c1;
+  --island-accent-ink: #0b1a18;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0a0d0c;
+  --surface: #131817;
+  --surface-2: #1b2220;
+  --fg: #f1f5f3;
+  --accent: #c6f04c;
+  --accent-2: #5fe3c1;
+  --accent-ink: #0a0d0c;
+  --energy: #c6f04c;
+  --energy-ink: #0a0d0c;
+
+  --shadow-card-v: 0 0 0 1px rgb(255 255 255 / 0.03), 0 18px 40px -20px rgb(0 0 0 / 0.7);
+  --shadow-lift-v: 0 0 0 1px rgb(198 240 76 / 0.16), 0 30px 70px -28px rgb(198 240 76 / 0.28);
+
+  --island-bg: #101615;
+  --island-surface-solid: #182120;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-ink: var(--accent-ink);
+  --color-energy: var(--energy);
+  --color-energy-ink: var(--energy-ink);
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: var(--shadow-card-v);
+  --shadow-lift: var(--shadow-lift-v);
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------------------------------------------------------------
+   Keyframes
+   --------------------------------------------------------------- */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes word-up {
+  from { transform: translateY(108%); }
+  to { transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.6); opacity: 0.75; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(6%, -8%) scale(1.08); }
+  66% { transform: translate(-5%, 6%) scale(0.95); }
+}
+@keyframes ecg {
+  0% { stroke-dashoffset: 1; }
+  100% { stroke-dashoffset: -1; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------------
+   Base
+   --------------------------------------------------------------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 26%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Utilities
+   --------------------------------------------------------------- */
+@utility wrap {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding-inline: 1.25rem;
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 86;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1;
+}
+
+@utility text-accent-gradient {
+  background-image: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Faint anatomical grid */
+@utility bg-grid {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--fg) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--fg) 7%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+@utility mask-fade {
+  mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
+}
+
+/* A dark block inside the page: re-points the tokens for everything inside */
+.island {
+  --bg: var(--island-bg);
+  --surface: var(--island-surface-solid);
+  --surface-2: color-mix(in oklab, var(--island-surface-solid) 80%, white 6%);
+  --fg: #eef5f2;
+  --accent: var(--island-accent);
+  --accent-2: var(--island-accent-2);
+  --accent-ink: var(--island-accent-ink);
+  --shadow-card-v: 0 0 0 1px rgb(255 255 255 / 0.05);
+  --shadow-lift-v: 0 0 0 1px rgb(198 240 76 / 0.2), 0 30px 70px -28px rgb(198 240 76 / 0.3);
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* --- Hero entrance: pure CSS so it never waits on hydration --- */
+.enter {
+  opacity: 0;
+  animation: rise 0.9s var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0s);
+}
+.enter-fade {
+  opacity: 0;
+  animation: fade-in 1.2s ease forwards;
+  animation-delay: var(--d, 0s);
+}
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.word-mask > .word {
+  display: inline-block;
+  transform: translateY(108%);
+  animation: word-up 1s var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0s);
+}
+
+/* SVG line work: paths carry pathLength="1" */
+.trace {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 1.8s var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0s);
+}
+.ecg {
+  stroke-dasharray: 0.35 0.65;
+  animation: ecg var(--t, 3.2s) linear infinite;
+}
+.float { animation: float var(--t, 6s) ease-in-out infinite; animation-delay: var(--d, 0s); }
+.drift { animation: drift var(--t, 18s) ease-in-out infinite; animation-delay: var(--d, 0s); }
+.spin-slow { animation: spin var(--t, 40s) linear infinite; }
+.ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse-ring 2.4s ease-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* Theme switch: the new theme grows out of the toggle button */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  animation: theme-reveal 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+@keyframes theme-reveal {
+  from { clip-path: circle(0 at var(--vt-x, 100%) var(--vt-y, 0)); }
+  to { clip-path: circle(150vmax at var(--vt-x, 100%) var(--vt-y, 0)); }
+}
+
+/* --- Specialty cards --- */
+
+/* Conic light that runs around a card's edge on hover */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes border-spin {
+  to { --angle: 360deg; }
+}
+.glow-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0 55%,
+    var(--accent-2) 70%,
+    var(--accent) 82%,
+    transparent 95%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: border-spin 3.5s linear infinite;
+  pointer-events: none;
+}
+
+/* Outlined numeral that fills with the brand gradient, left to right */
+.num-fill {
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--fg) 16%, transparent);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)) no-repeat;
+  background-size: 0% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: background-size 0.9s var(--ease-out-expo), -webkit-text-stroke-color 0.5s ease;
+}
+.group\/spot:hover .num-fill {
+  background-size: 100% 100%;
+  -webkit-text-stroke-color: transparent;
+}
+
+/* Spine icon: vertebrae ripple one after another */
+@keyframes vert {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(1.6px); }
+}
+.vert {
+  animation: vert 2.4s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* Bone icon: a joint rocking through its range */
+@keyframes rock {
+  0%, 100% { transform: rotate(-14deg); }
+  50% { transform: rotate(14deg); }
+}
+.rock {
+  transform-origin: center;
+  animation: rock 3s ease-in-out infinite;
+}
+
+/* Flowing dash along a line drawing (paths carry pathLength="1") */
+@keyframes flow-dash {
+  to { stroke-dashoffset: -1; }
+}
+.flow {
+  stroke-dasharray: 0.18 0.07;
+  animation: flow-dash var(--t, 6s) linear infinite;
+}
+
+/* A dot travelling along a joint's arc */
+@keyframes swing {
+  0%, 100% { transform: rotate(-50deg); }
+  50% { transform: rotate(50deg); }
+}
+.swing {
+  transform-box: view-box;
+  animation: swing 4s ease-in-out infinite;
+}
+
+/* --- Site-wide extras --- */
+
+/* A light sweeping across gradient text */
+@keyframes shine {
+  to { background-position: -200% 0; }
+}
+.shine {
+  background-image: linear-gradient(
+    100deg,
+    var(--accent) 0%,
+    var(--accent-2) 25%,
+    color-mix(in oklab, var(--accent-2) 55%, white) 35%,
+    var(--accent-2) 45%,
+    var(--accent) 70%,
+    var(--accent-2) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: shine 5s linear infinite;
+}
+
+/* Body scan line on the "Where does it hurt?" figure */
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.scan {
+  animation: scan 4.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Shimmer rising through the gym bars */
+@keyframes rise-shimmer {
+  from { transform: translateY(110%); }
+  to { transform: translateY(-110%); }
+}
+.bar-shimmer {
+  animation: rise-shimmer var(--t, 2.8s) ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+/* Breathing glow on the top bar */
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent) 0%, transparent); }
+  50% { box-shadow: 0 0 34px 2px color-mix(in oklab, var(--accent) 45%, transparent); }
+}
+.breathe { animation: breathe 2.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
